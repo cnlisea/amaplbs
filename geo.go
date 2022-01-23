@@ -40,16 +40,16 @@ func (a *AmapLbs) ReGeoCode(longitude string, latitude string) (*ReGeoCode, erro
 		Status    string `json:"status"` // 返回结果状态值，值为0或1，0表示请求失败；1表示请求成功
 		Info      string `json:"info"`   // 返回状态说明，status为0时，info返回错误原；否则返回"OK"
 		ReGeoCode struct {
-			FormatTedAddress string `json:"formatted_address"` // 地址信息
+			FormatTedAddress interface{} `json:"formatted_address"` // 地址信息
 			AddressComponent struct {
-				Country  string      `json:"country"`        // 国家
-				Province string      `json:"province"`       // 省
+				Country  interface{} `json:"country"`        // 国家
+				Province interface{} `json:"province"`       // 省
 				City     interface{} `json:"city,omitempty"` // 市
-				CityCode string      `json:"citycode"`       // 城市编码
-				District string      `json:"district"`       // 区
-				AdCode   string      `json:"adcode"`         // 区编码
-				Township string      `json:"township"`       // 乡镇/街道
-				TownCode string      `json:"towncode"`       // 乡镇街道编码
+				CityCode interface{} `json:"citycode"`       // 城市编码
+				District interface{} `json:"district"`       // 区
+				AdCode   interface{} `json:"adcode"`         // 区编码
+				Township interface{} `json:"township"`       // 乡镇/街道
+				TownCode interface{} `json:"towncode"`       // 乡镇街道编码
 			} `json:"addressComponent"` // 地址元素
 		} `json:"regeocode"` // 逆地理编码
 	}
@@ -62,17 +62,16 @@ func (a *AmapLbs) ReGeoCode(longitude string, latitude string) (*ReGeoCode, erro
 		return nil, errors.New(resData.Info)
 	}
 
-	city, _ := resData.ReGeoCode.AddressComponent.City.(string)
+	reGeoCode := new(ReGeoCode)
+	reGeoCode.Country, _ = resData.ReGeoCode.AddressComponent.Country.(string)
+	reGeoCode.Province, _ = resData.ReGeoCode.AddressComponent.Province.(string)
+	reGeoCode.City, _ = resData.ReGeoCode.AddressComponent.City.(string)
+	reGeoCode.CityCode, _ = resData.ReGeoCode.AddressComponent.CityCode.(string)
+	reGeoCode.District, _ = resData.ReGeoCode.AddressComponent.District.(string)
+	reGeoCode.AdCode, _ = resData.ReGeoCode.AddressComponent.AdCode.(string)
+	reGeoCode.Address, _ = resData.ReGeoCode.FormatTedAddress.(string)
 
-	return &ReGeoCode{
-		Country:  resData.ReGeoCode.AddressComponent.Country,
-		Province: resData.ReGeoCode.AddressComponent.Province,
-		City:     city,
-		CityCode: resData.ReGeoCode.AddressComponent.CityCode,
-		District: resData.ReGeoCode.AddressComponent.District,
-		AdCode:   resData.ReGeoCode.AddressComponent.AdCode,
-		Address:  resData.ReGeoCode.FormatTedAddress,
-	}, nil
+	return reGeoCode, nil
 }
 
 func (a *AmapLbs) GenLocationTrim(location string, num int) string {
